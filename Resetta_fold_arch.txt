@@ -1,0 +1,587 @@
+RoseTTAFoldModule(
+  (latent_emb): MSA_emb(
+    (emb): Linear(in_features=48, out_features=256, bias=True)
+    (emb_q): Embedding(22, 256)
+    (emb_left): Embedding(22, 128)
+    (emb_right): Embedding(22, 128)
+    (emb_state): Embedding(22, 64)
+    (drop): Dropout(p=0.15, inplace=False)
+    (pos): PositionalEncoding2D(
+      (emb): Embedding(65, 128)
+      (drop): Dropout(p=0.15, inplace=False)
+    )
+  )
+  (full_emb): Extra_emb(
+    (emb): Linear(in_features=25, out_features=64, bias=True)
+    (emb_q): Embedding(22, 64)
+    (drop): Dropout(p=0.15, inplace=False)
+  )
+  (templ_emb): Templ_emb(
+    (emb): Linear(in_features=88, out_features=64, bias=True)
+    (templ_stack): TemplatePairStack(
+      (block): ModuleList(
+        (0-1): 2 x PairStr2Pair(
+          (emb_rbf): Linear(in_features=36, out_features=32, bias=True)
+          (proj_rbf): Linear(in_features=32, out_features=64, bias=True)
+          (drop_row): Dropout()
+          (drop_col): Dropout()
+          (row_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=64, out_features=128, bias=False)
+            (to_k): Linear(in_features=64, out_features=128, bias=False)
+            (to_v): Linear(in_features=64, out_features=128, bias=False)
+            (to_b): Linear(in_features=64, out_features=4, bias=False)
+            (to_g): Linear(in_features=64, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=64, bias=True)
+          )
+          (col_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=64, out_features=128, bias=False)
+            (to_k): Linear(in_features=64, out_features=128, bias=False)
+            (to_v): Linear(in_features=64, out_features=128, bias=False)
+            (to_b): Linear(in_features=64, out_features=4, bias=False)
+            (to_g): Linear(in_features=64, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=64, bias=True)
+          )
+          (ff): FeedForwardLayer(
+            (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (linear1): Linear(in_features=64, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+            (linear2): Linear(in_features=128, out_features=64, bias=True)
+          )
+        )
+      )
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+    (attn): Attention(
+      (to_q): Linear(in_features=128, out_features=128, bias=False)
+      (to_k): Linear(in_features=64, out_features=128, bias=False)
+      (to_v): Linear(in_features=64, out_features=128, bias=False)
+      (to_out): Linear(in_features=128, out_features=128, bias=True)
+    )
+    (emb_t1d): Linear(in_features=52, out_features=64, bias=True)
+    (proj_t1d): Linear(in_features=64, out_features=64, bias=True)
+    (attn_tor): Attention(
+      (to_q): Linear(in_features=64, out_features=128, bias=False)
+      (to_k): Linear(in_features=64, out_features=128, bias=False)
+      (to_v): Linear(in_features=64, out_features=128, bias=False)
+      (to_out): Linear(in_features=128, out_features=64, bias=True)
+    )
+  )
+  (recycle): Recycling(
+    (proj_dist): Linear(in_features=164, out_features=128, bias=True)
+    (norm_state): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+    (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (simulator): IterativeSimulator(
+    (proj_state): Linear(in_features=64, out_features=8, bias=True)
+    (extra_block): ModuleList(
+      (0-3): 4 x IterBlock(
+        (msa2msa): MSAPairStr2MSA(
+          (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (proj_pair): Linear(in_features=164, out_features=128, bias=True)
+          (norm_state): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (proj_state): Linear(in_features=8, out_features=64, bias=True)
+          (drop_row): Dropout()
+          (row_attn): MSARowAttentionWithBias(
+            (norm_msa): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (seq_weight): SequenceWeight(
+              (to_query): Linear(in_features=64, out_features=64, bias=True)
+              (to_key): Linear(in_features=64, out_features=64, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (to_q): Linear(in_features=64, out_features=64, bias=False)
+            (to_k): Linear(in_features=64, out_features=64, bias=False)
+            (to_v): Linear(in_features=64, out_features=64, bias=False)
+            (to_b): Linear(in_features=128, out_features=8, bias=False)
+            (to_g): Linear(in_features=64, out_features=64, bias=True)
+            (to_out): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (col_attn): MSAColGlobalAttention(
+            (norm_msa): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=64, out_features=64, bias=False)
+            (to_k): Linear(in_features=64, out_features=8, bias=False)
+            (to_v): Linear(in_features=64, out_features=8, bias=False)
+            (to_g): Linear(in_features=64, out_features=64, bias=True)
+            (to_out): Linear(in_features=64, out_features=64, bias=True)
+          )
+          (ff): FeedForwardLayer(
+            (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (linear1): Linear(in_features=64, out_features=256, bias=True)
+            (dropout): Dropout(p=0.15, inplace=False)
+            (linear2): Linear(in_features=256, out_features=64, bias=True)
+          )
+        )
+        (msa2pair): MSA2Pair(
+          (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (proj_left): Linear(in_features=64, out_features=16, bias=True)
+          (proj_right): Linear(in_features=64, out_features=16, bias=True)
+          (proj_out): Linear(in_features=256, out_features=128, bias=True)
+        )
+        (pair2pair): PairStr2Pair(
+          (emb_rbf): Linear(in_features=36, out_features=32, bias=True)
+          (proj_rbf): Linear(in_features=32, out_features=128, bias=True)
+          (drop_row): Dropout()
+          (drop_col): Dropout()
+          (row_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=128, out_features=128, bias=False)
+            (to_k): Linear(in_features=128, out_features=128, bias=False)
+            (to_v): Linear(in_features=128, out_features=128, bias=False)
+            (to_b): Linear(in_features=128, out_features=4, bias=False)
+            (to_g): Linear(in_features=128, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=128, bias=True)
+          )
+          (col_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=128, out_features=128, bias=False)
+            (to_k): Linear(in_features=128, out_features=128, bias=False)
+            (to_v): Linear(in_features=128, out_features=128, bias=False)
+            (to_b): Linear(in_features=128, out_features=4, bias=False)
+            (to_g): Linear(in_features=128, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=128, bias=True)
+          )
+          (ff): FeedForwardLayer(
+            (norm): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (linear1): Linear(in_features=128, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+            (linear2): Linear(in_features=256, out_features=128, bias=True)
+          )
+        )
+        (str2str): Str2Str(
+          (norm_msa): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (norm_state): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (embed_x): Linear(in_features=72, out_features=8, bias=True)
+          (embed_e1): Linear(in_features=128, out_features=32, bias=True)
+          (embed_e2): Linear(in_features=69, out_features=32, bias=True)
+          (norm_node): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (norm_edge1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+          (norm_edge2): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+          (se3): SE3TransformerWrapper(
+            (se3): SE3Transformer(
+              (graph_modules): Sequential(
+                (0): AttentionBlockSE3(
+                  (to_key_value): ConvSE3(
+                    (conv_in): ModuleDict(
+                      (1): VersatileConvSE3(
+                        (radial_func): RadialProfile(
+                          (net): Sequential(
+                            (0): Linear(in_features=33, out_features=32, bias=True)
+                            (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (2): ReLU()
+                            (3): Linear(in_features=32, out_features=32, bias=True)
+                            (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (5): ReLU()
+                            (6): Linear(in_features=32, out_features=192, bias=False)
+                          )
+                        )
+                      )
+                      (0): VersatileConvSE3(
+                        (radial_func): RadialProfile(
+                          (net): Sequential(
+                            (0): Linear(in_features=33, out_features=32, bias=True)
+                            (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (2): ReLU()
+                            (3): Linear(in_features=32, out_features=32, bias=True)
+                            (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (5): ReLU()
+                            (6): Linear(in_features=32, out_features=256, bias=False)
+                          )
+                        )
+                      )
+                    )
+                  )
+                  (to_query): LinearSE3(
+                    (weights): ParameterDict(
+                        (0): Parameter containing: [torch.FloatTensor of size 8x8]
+                        (1): Parameter containing: [torch.FloatTensor of size 8x3]
+                    )
+                  )
+                  (attention): AttentionSE3()
+                  (project): LinearSE3(
+                    (weights): ParameterDict(
+                        (0): Parameter containing: [torch.FloatTensor of size 32x16]
+                        (1): Parameter containing: [torch.FloatTensor of size 32x11]
+                    )
+                  )
+                )
+                (1): NormSE3(
+                  (nonlinearity): ReLU()
+                  (group_norm): GroupNorm(2, 64, eps=1e-05, affine=True)
+                )
+                (2): ConvSE3(
+                  (conv_out): ModuleDict(
+                    (1): VersatileConvSE3(
+                      (radial_func): RadialProfile(
+                        (net): Sequential(
+                          (0): Linear(in_features=33, out_features=32, bias=True)
+                          (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (2): ReLU()
+                          (3): Linear(in_features=32, out_features=32, bias=True)
+                          (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (5): ReLU()
+                          (6): Linear(in_features=32, out_features=256, bias=False)
+                        )
+                      )
+                    )
+                    (0): VersatileConvSE3(
+                      (radial_func): RadialProfile(
+                        (net): Sequential(
+                          (0): Linear(in_features=33, out_features=32, bias=True)
+                          (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (2): ReLU()
+                          (3): Linear(in_features=32, out_features=32, bias=True)
+                          (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (5): ReLU()
+                          (6): Linear(in_features=32, out_features=512, bias=False)
+                        )
+                      )
+                    )
+                  )
+                  (to_kernel_self): ParameterDict(
+                      (1): Parameter containing: [torch.FloatTensor of size 2x32]
+                      (0): Parameter containing: [torch.FloatTensor of size 8x32]
+                  )
+                )
+              )
+            )
+          )
+          (sc_predictor): SCPred(
+            (norm_s0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+            (norm_si): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+            (linear_s0): Linear(in_features=64, out_features=128, bias=True)
+            (linear_si): Linear(in_features=8, out_features=128, bias=True)
+            (linear_1): Linear(in_features=128, out_features=128, bias=True)
+            (linear_2): Linear(in_features=128, out_features=128, bias=True)
+            (linear_3): Linear(in_features=128, out_features=128, bias=True)
+            (linear_4): Linear(in_features=128, out_features=128, bias=True)
+            (linear_out): Linear(in_features=128, out_features=20, bias=True)
+          )
+        )
+      )
+    )
+    (main_block): ModuleList(
+      (0-31): 32 x IterBlock(
+        (msa2msa): MSAPairStr2MSA(
+          (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (proj_pair): Linear(in_features=164, out_features=128, bias=True)
+          (norm_state): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (proj_state): Linear(in_features=8, out_features=256, bias=True)
+          (drop_row): Dropout()
+          (row_attn): MSARowAttentionWithBias(
+            (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (seq_weight): SequenceWeight(
+              (to_query): Linear(in_features=256, out_features=256, bias=True)
+              (to_key): Linear(in_features=256, out_features=256, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (to_q): Linear(in_features=256, out_features=256, bias=False)
+            (to_k): Linear(in_features=256, out_features=256, bias=False)
+            (to_v): Linear(in_features=256, out_features=256, bias=False)
+            (to_b): Linear(in_features=128, out_features=8, bias=False)
+            (to_g): Linear(in_features=256, out_features=256, bias=True)
+            (to_out): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (col_attn): MSAColAttention(
+            (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=256, out_features=256, bias=False)
+            (to_k): Linear(in_features=256, out_features=256, bias=False)
+            (to_v): Linear(in_features=256, out_features=256, bias=False)
+            (to_g): Linear(in_features=256, out_features=256, bias=True)
+            (to_out): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (ff): FeedForwardLayer(
+            (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+            (linear1): Linear(in_features=256, out_features=1024, bias=True)
+            (dropout): Dropout(p=0.15, inplace=False)
+            (linear2): Linear(in_features=1024, out_features=256, bias=True)
+          )
+        )
+        (msa2pair): MSA2Pair(
+          (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (proj_left): Linear(in_features=256, out_features=16, bias=True)
+          (proj_right): Linear(in_features=256, out_features=16, bias=True)
+          (proj_out): Linear(in_features=256, out_features=128, bias=True)
+        )
+        (pair2pair): PairStr2Pair(
+          (emb_rbf): Linear(in_features=36, out_features=32, bias=True)
+          (proj_rbf): Linear(in_features=32, out_features=128, bias=True)
+          (drop_row): Dropout()
+          (drop_col): Dropout()
+          (row_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=128, out_features=128, bias=False)
+            (to_k): Linear(in_features=128, out_features=128, bias=False)
+            (to_v): Linear(in_features=128, out_features=128, bias=False)
+            (to_b): Linear(in_features=128, out_features=4, bias=False)
+            (to_g): Linear(in_features=128, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=128, bias=True)
+          )
+          (col_attn): BiasedAxialAttention(
+            (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (norm_bias): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (to_q): Linear(in_features=128, out_features=128, bias=False)
+            (to_k): Linear(in_features=128, out_features=128, bias=False)
+            (to_v): Linear(in_features=128, out_features=128, bias=False)
+            (to_b): Linear(in_features=128, out_features=4, bias=False)
+            (to_g): Linear(in_features=128, out_features=128, bias=True)
+            (to_out): Linear(in_features=128, out_features=128, bias=True)
+          )
+          (ff): FeedForwardLayer(
+            (norm): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+            (linear1): Linear(in_features=128, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+            (linear2): Linear(in_features=256, out_features=128, bias=True)
+          )
+        )
+        (str2str): Str2Str(
+          (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+          (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+          (norm_state): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (embed_x): Linear(in_features=264, out_features=8, bias=True)
+          (embed_e1): Linear(in_features=128, out_features=32, bias=True)
+          (embed_e2): Linear(in_features=69, out_features=32, bias=True)
+          (norm_node): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+          (norm_edge1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+          (norm_edge2): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+          (se3): SE3TransformerWrapper(
+            (se3): SE3Transformer(
+              (graph_modules): Sequential(
+                (0): AttentionBlockSE3(
+                  (to_key_value): ConvSE3(
+                    (conv_in): ModuleDict(
+                      (1): VersatileConvSE3(
+                        (radial_func): RadialProfile(
+                          (net): Sequential(
+                            (0): Linear(in_features=33, out_features=32, bias=True)
+                            (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (2): ReLU()
+                            (3): Linear(in_features=32, out_features=32, bias=True)
+                            (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (5): ReLU()
+                            (6): Linear(in_features=32, out_features=192, bias=False)
+                          )
+                        )
+                      )
+                      (0): VersatileConvSE3(
+                        (radial_func): RadialProfile(
+                          (net): Sequential(
+                            (0): Linear(in_features=33, out_features=32, bias=True)
+                            (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (2): ReLU()
+                            (3): Linear(in_features=32, out_features=32, bias=True)
+                            (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                            (5): ReLU()
+                            (6): Linear(in_features=32, out_features=256, bias=False)
+                          )
+                        )
+                      )
+                    )
+                  )
+                  (to_query): LinearSE3(
+                    (weights): ParameterDict(
+                        (0): Parameter containing: [torch.FloatTensor of size 8x8]
+                        (1): Parameter containing: [torch.FloatTensor of size 8x3]
+                    )
+                  )
+                  (attention): AttentionSE3()
+                  (project): LinearSE3(
+                    (weights): ParameterDict(
+                        (0): Parameter containing: [torch.FloatTensor of size 32x16]
+                        (1): Parameter containing: [torch.FloatTensor of size 32x11]
+                    )
+                  )
+                )
+                (1): NormSE3(
+                  (nonlinearity): ReLU()
+                  (group_norm): GroupNorm(2, 64, eps=1e-05, affine=True)
+                )
+                (2): ConvSE3(
+                  (conv_out): ModuleDict(
+                    (1): VersatileConvSE3(
+                      (radial_func): RadialProfile(
+                        (net): Sequential(
+                          (0): Linear(in_features=33, out_features=32, bias=True)
+                          (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (2): ReLU()
+                          (3): Linear(in_features=32, out_features=32, bias=True)
+                          (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (5): ReLU()
+                          (6): Linear(in_features=32, out_features=256, bias=False)
+                        )
+                      )
+                    )
+                    (0): VersatileConvSE3(
+                      (radial_func): RadialProfile(
+                        (net): Sequential(
+                          (0): Linear(in_features=33, out_features=32, bias=True)
+                          (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (2): ReLU()
+                          (3): Linear(in_features=32, out_features=32, bias=True)
+                          (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                          (5): ReLU()
+                          (6): Linear(in_features=32, out_features=512, bias=False)
+                        )
+                      )
+                    )
+                  )
+                  (to_kernel_self): ParameterDict(
+                      (1): Parameter containing: [torch.FloatTensor of size 2x32]
+                      (0): Parameter containing: [torch.FloatTensor of size 8x32]
+                  )
+                )
+              )
+            )
+          )
+          (sc_predictor): SCPred(
+            (norm_s0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+            (norm_si): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+            (linear_s0): Linear(in_features=256, out_features=128, bias=True)
+            (linear_si): Linear(in_features=8, out_features=128, bias=True)
+            (linear_1): Linear(in_features=128, out_features=128, bias=True)
+            (linear_2): Linear(in_features=128, out_features=128, bias=True)
+            (linear_3): Linear(in_features=128, out_features=128, bias=True)
+            (linear_4): Linear(in_features=128, out_features=128, bias=True)
+            (linear_out): Linear(in_features=128, out_features=20, bias=True)
+          )
+        )
+      )
+    )
+    (proj_state2): Linear(in_features=8, out_features=64, bias=True)
+    (str_refiner): Str2Str(
+      (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+      (norm_pair): LayerNorm((128,), eps=1e-05, elementwise_affine=True)
+      (norm_state): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (embed_x): Linear(in_features=320, out_features=64, bias=True)
+      (embed_e1): Linear(in_features=128, out_features=64, bias=True)
+      (embed_e2): Linear(in_features=101, out_features=64, bias=True)
+      (norm_node): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (norm_edge1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (norm_edge2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (se3): SE3TransformerWrapper(
+        (se3): SE3Transformer(
+          (graph_modules): Sequential(
+            (0): AttentionBlockSE3(
+              (to_key_value): ConvSE3(
+                (conv_in): ModuleDict(
+                  (1): VersatileConvSE3(
+                    (radial_func): RadialProfile(
+                      (net): Sequential(
+                        (0): Linear(in_features=65, out_features=32, bias=True)
+                        (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                        (2): ReLU()
+                        (3): Linear(in_features=32, out_features=32, bias=True)
+                        (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                        (5): ReLU()
+                        (6): Linear(in_features=32, out_features=192, bias=False)
+                      )
+                    )
+                  )
+                  (0): VersatileConvSE3(
+                    (radial_func): RadialProfile(
+                      (net): Sequential(
+                        (0): Linear(in_features=65, out_features=32, bias=True)
+                        (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                        (2): ReLU()
+                        (3): Linear(in_features=32, out_features=32, bias=True)
+                        (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                        (5): ReLU()
+                        (6): Linear(in_features=32, out_features=2048, bias=False)
+                      )
+                    )
+                  )
+                )
+              )
+              (to_query): LinearSE3(
+                (weights): ParameterDict(
+                    (0): Parameter containing: [torch.FloatTensor of size 8x64]
+                    (1): Parameter containing: [torch.FloatTensor of size 8x3]
+                )
+              )
+              (attention): AttentionSE3()
+              (project): LinearSE3(
+                (weights): ParameterDict(
+                    (0): Parameter containing: [torch.FloatTensor of size 32x72]
+                    (1): Parameter containing: [torch.FloatTensor of size 32x11]
+                )
+              )
+            )
+            (1): NormSE3(
+              (nonlinearity): ReLU()
+              (group_norm): GroupNorm(2, 64, eps=1e-05, affine=True)
+            )
+            (2): ConvSE3(
+              (conv_out): ModuleDict(
+                (1): VersatileConvSE3(
+                  (radial_func): RadialProfile(
+                    (net): Sequential(
+                      (0): Linear(in_features=65, out_features=32, bias=True)
+                      (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                      (2): ReLU()
+                      (3): Linear(in_features=32, out_features=32, bias=True)
+                      (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                      (5): ReLU()
+                      (6): Linear(in_features=32, out_features=256, bias=False)
+                    )
+                  )
+                )
+                (0): VersatileConvSE3(
+                  (radial_func): RadialProfile(
+                    (net): Sequential(
+                      (0): Linear(in_features=65, out_features=32, bias=True)
+                      (1): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                      (2): ReLU()
+                      (3): Linear(in_features=32, out_features=32, bias=True)
+                      (4): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+                      (5): ReLU()
+                      (6): Linear(in_features=32, out_features=4096, bias=False)
+                    )
+                  )
+                )
+              )
+              (to_kernel_self): ParameterDict(
+                  (1): Parameter containing: [torch.FloatTensor of size 2x32]
+                  (0): Parameter containing: [torch.FloatTensor of size 64x32]
+              )
+            )
+          )
+        )
+      )
+      (sc_predictor): SCPred(
+        (norm_s0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+        (norm_si): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (linear_s0): Linear(in_features=256, out_features=128, bias=True)
+        (linear_si): Linear(in_features=64, out_features=128, bias=True)
+        (linear_1): Linear(in_features=128, out_features=128, bias=True)
+        (linear_2): Linear(in_features=128, out_features=128, bias=True)
+        (linear_3): Linear(in_features=128, out_features=128, bias=True)
+        (linear_4): Linear(in_features=128, out_features=128, bias=True)
+        (linear_out): Linear(in_features=128, out_features=20, bias=True)
+      )
+    )
+  )
+  (c6d_pred): DistanceNetwork(
+    (proj_symm): Linear(in_features=128, out_features=74, bias=True)
+    (proj_asymm): Linear(in_features=128, out_features=56, bias=True)
+  )
+  (aa_pred): MaskedTokenNetwork(
+    (proj): Linear(in_features=256, out_features=21, bias=True)
+  )
+  (lddt_pred): LDDTNetwork(
+    (proj): Linear(in_features=64, out_features=50, bias=True)
+  )
+  (exp_pred): ExpResolvedNetwork(
+    (norm_msa): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (norm_state): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    (proj): Linear(in_features=320, out_features=1, bias=True)
+  )
+)
